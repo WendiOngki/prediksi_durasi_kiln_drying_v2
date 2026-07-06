@@ -172,21 +172,21 @@ if submitted:
     selesai = pd.Timestamp(tanggal_mulai) + pd.Timedelta(days=durasi)
     hari_id = {'Monday':'Senin','Tuesday':'Selasa','Wednesday':'Rabu','Thursday':'Kamis',
                'Friday':'Jumat','Saturday':'Sabtu','Sunday':'Minggu'}
-    hari_selesai = hari_id.get(selesai.strftime("%A"), selesai.strftime("%A"))
+
+    hari_mulai   = hari_id.get(pd.Timestamp(tanggal_mulai).strftime("%A"), "")
+    hari_selesai = hari_id.get(selesai.strftime("%A"), "")
 
     c1, c2 = st.columns(2)
     with c1:
-        st.metric("🚀 Tanggal Mulai", pd.Timestamp(tanggal_mulai).strftime("%d %B %Y"))
+        st.metric("🚀 Tanggal Mulai", f"{hari_mulai}, {pd.Timestamp(tanggal_mulai).strftime('%d %B %Y')}")
     with c2:
-        st.metric("📅 Perkiraan Selesai", selesai.strftime("%d %B %Y"))
+        st.metric("📅 Perkiraan Selesai", f"{hari_selesai}, {selesai.strftime('%d %B %Y')}")
 
     c3, c4 = st.columns(2)
     with c3:
         st.metric("⏱️ Estimasi Durasi", f"{durasi} hari")
     with c4:
         st.metric("Musim", "🌧️ Hujan" if musim == 1 else "☀️ Kemarau")
-
-    st.caption(f"Estimasi selesai jatuh pada hari **{hari_selesai}**")
 
     mae_model = 0.6223
     durasi_min = max(0, durasi - mae_model)
