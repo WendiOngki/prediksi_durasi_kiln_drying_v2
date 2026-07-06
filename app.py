@@ -45,16 +45,18 @@ with st.form("input_form"):
                             "Oktober","November","Desember"][x-1])
     with col2:
         vol_total_m3 = st.number_input("Volume Total (m³)", min_value=BATAS['vol_total_m3'][0],
-                          max_value=BATAS['vol_total_m3'][1], value=10.0, step=0.5)
+                          max_value=BATAS['vol_total_m3'][1], value=10.0, step=0.5,
+                          help="Total volume kayu dalam batch, maksimal 15 m³.")
         total_lembar = st.number_input("Total Lembar", min_value=BATAS['total_lembar'][0],
                           max_value=BATAS['total_lembar'][1], value=500, step=10)
         jumlah_asal  = st.number_input("Jumlah Asal Kayu", min_value=BATAS['jumlah_asal'][0],
-                          max_value=BATAS['jumlah_asal'][1], value=1, step=1)
+                          max_value=BATAS['jumlah_asal'][1], value=1, step=1,
+                          help="Jumlah daerah asal kayu berbeda dalam satu batch.")
 
     st.subheader("🌤️ Kondisi Cuaca")
     col3, col4 = st.columns(2)
     with col3:
-        kelembaban_pct = st.slider("Kelembaban (%)", 40, 100, 75)
+        kelembaban_pct = st.slider("Kelembaban (%)", 40.0, 100.0, 75.0, step=0.5)
         curah_hujan_mm = st.number_input("Curah Hujan (mm)", min_value=BATAS['curah_hujan_mm'][0],
                           max_value=BATAS['curah_hujan_mm'][1], value=3.0, step=0.5)
     with col4:
@@ -65,7 +67,7 @@ with st.form("input_form"):
 
     st.subheader("🎯 Target Kadar Air Akhir")
     mc_akhir_ket_max = st.slider(
-        "Target MC Akhir untuk Papan Tertebal (%)", 5, 19, 12,
+        "Target MC Akhir untuk Papan Tertebal (%)", 5.0, 19.0, 12.0, step=0.5,
         help="Batas maksimal kadar air yang diinginkan pada papan dengan ketebalan terbesar dalam batch."
     )
 
@@ -79,6 +81,10 @@ with st.form("input_form"):
                                  value=0, step=10, key=f"t_{t}")
             if n > 0:
                 komposisi[t] = n
+
+    total_input_sementara = sum(komposisi.values())
+    if total_input_sementara > 0:
+        st.caption(f"Total lembar terisi: **{total_input_sementara}** / {total_lembar}")
 
     submitted = st.form_submit_button("🔍 Hitung Prediksi", use_container_width=True, type="primary")
 
