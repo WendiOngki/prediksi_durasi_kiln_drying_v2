@@ -27,13 +27,19 @@ TEBAL_BINS = [2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 8.0]
 BATAS = {
     'vol_total_m3'   : (0.0, 15.0),
     'total_lembar'   : (0, 1500),
-    'jumlah_asal'    : (1, 5),
     'curah_hujan_mm' : (0.0, 40.0),
     'suhu_maks_c'    : (25.0, 35.0),
     'suhu_min_c'     : (15.0, 26.0),
 }
 
 with st.form("input_form"):
+    st.subheader("📅 Jadwal")
+    tanggal_mulai = st.date_input(
+        "Tanggal Mulai Pengeringan",
+        value=pd.Timestamp.now(),
+        help="Tanggal batch kayu mulai dimasukkan ke kiln."
+    )
+
     st.subheader("📋 Informasi Batch")
     col1, col2 = st.columns(2)
     with col1:
@@ -49,8 +55,7 @@ with st.form("input_form"):
                           help="Total volume kayu dalam batch, maksimal 15 m³.")
         total_lembar = st.number_input("Total Lembar", min_value=BATAS['total_lembar'][0],
                           max_value=BATAS['total_lembar'][1], value=500, step=10)
-        jumlah_asal  = st.number_input("Jumlah Asal Kayu", min_value=BATAS['jumlah_asal'][0],
-                          max_value=BATAS['jumlah_asal'][1], value=1, step=1,
+        jumlah_asal  = st.slider("Jumlah Asal Kayu", min_value=1, max_value=5, value=1,
                           help="Jumlah daerah asal kayu berbeda dalam satu batch.")
 
     st.subheader("🌤️ Kondisi Cuaca")
@@ -167,7 +172,7 @@ if submitted:
     with c1:
         st.metric("⏱️ Estimasi Durasi", f"{durasi} hari")
     with c2:
-        selesai = pd.Timestamp.now() + pd.Timedelta(days=durasi)
+        selesai = pd.Timestamp(tanggal_mulai) + pd.Timedelta(days=durasi)
         st.metric("📅 Perkiraan Selesai", selesai.strftime("%d %b %Y"))
     with c3:
         st.metric("Musim", "🌧️ Hujan" if musim == 1 else "☀️ Kemarau")
