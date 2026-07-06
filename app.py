@@ -56,7 +56,8 @@ with st.form("input_form"):
     st.subheader("🌤️ Kondisi Cuaca")
     col3, col4 = st.columns(2)
     with col3:
-        kelembaban_pct = st.slider("Kelembaban (%)", 40.0, 100.0, 75.0, step=0.5)
+        kelembaban_pct = st.number_input("Kelembaban (%)", min_value=40.0, max_value=100.0,
+                          value=75.0, step=0.5)
         curah_hujan_mm = st.number_input("Curah Hujan (mm)", min_value=BATAS['curah_hujan_mm'][0],
                           max_value=BATAS['curah_hujan_mm'][1], value=3.0, step=0.5)
     with col4:
@@ -66,8 +67,9 @@ with st.form("input_form"):
                           max_value=BATAS['suhu_min_c'][1], value=24.0, step=0.5)
 
     st.subheader("🎯 Target Kadar Air Akhir")
-    mc_akhir_ket_max = st.slider(
-        "Target MC Akhir untuk Papan Tertebal (%)", 5.0, 19.0, 12.0, step=0.5,
+    mc_akhir_ket_max = st.number_input(
+        "Target MC Akhir untuk Papan Tertebal (%)", min_value=5.0, max_value=19.0,
+        value=12.0, step=0.5,
         help="Batas maksimal kadar air yang diinginkan pada papan dengan ketebalan terbesar dalam batch."
     )
 
@@ -101,7 +103,7 @@ if submitted:
         st.error(f"⚠️ Total komposisi ketebalan ({total_komposisi}) harus sama dengan Total Lembar ({total_lembar}).")
         st.stop()
 
-    props = {f'prop_{t}': komposisi.get(t, 0) / total_komposisi for t in TEBAL_BINS}
+    props = {t: komposisi.get(t, 0) / total_komposisi for t in TEBAL_BINS}
     tebal_arr = np.repeat(list(komposisi.keys()), list(komposisi.values())).astype(float)
 
     ket_mean   = float(np.mean(tebal_arr))
