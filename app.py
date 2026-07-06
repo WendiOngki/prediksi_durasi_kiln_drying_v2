@@ -168,14 +168,43 @@ if submitted:
 
     st.divider()
     st.subheader("📊 Hasil Prediksi")
-    c1, c2, c3 = st.columns(3)
+
+    selesai = pd.Timestamp(tanggal_mulai) + pd.Timedelta(days=durasi)
+    hari_id = {'Monday':'Senin','Tuesday':'Selasa','Wednesday':'Rabu','Thursday':'Kamis',
+               'Friday':'Jumat','Saturday':'Sabtu','Sunday':'Minggu'}
+    hari_selesai = hari_id.get(selesai.strftime("%A"), selesai.strftime("%A"))
+
+    st.info(
+        f"📦 Batch kayu **{jenis_kayu}** dengan volume **{vol_total_m3} m³** dan target MC akhir "
+        f"**{mc_akhir_ket_max}%** pada papan tertebal, diprediksi membutuhkan waktu pengeringan "
+        f"**{durasi} hari**, dimulai **{pd.Timestamp(tanggal_mulai).strftime('%d %b %Y')}**."
+    )
+
+    c0, c1, c2, c3 = st.columns(4)
+    with c0:
+        st.metric("🚀 Tanggal Mulai", pd.Timestamp(tanggal_mulai).strftime("%d %b %Y"))
     with c1:
         st.metric("⏱️ Estimasi Durasi", f"{durasi} hari")
     with c2:
-        selesai = pd.Timestamp(tanggal_mulai) + pd.Timedelta(days=durasi)
         st.metric("📅 Perkiraan Selesai", selesai.strftime("%d %b %Y"))
     with c3:
         st.metric("Musim", "🌧️ Hujan" if musim == 1 else "☀️ Kemarau")
+
+    st.caption(f"Estimasi jatuh pada hari **{hari_selesai}**")
+
+    mae_model = 0.6223
+    durasi_min = max(0, durasi - mae_model)
+    durasi_max = durasi + mae_model
+    st.caption(f"Rentang estimasi (± MAE model): **{durasi_min:.1f} – {durasi_max:.1f} hari**")
+
+    target_perusahaan = 14
+    selisih = durasi - target_perusahaan
+    if selisih > 0:
+        st.warning(f"⏳ Durasi ini **{selisih:.1f} hari lebih lama** dari target perusahaan ({target_perusahaan} hari).")
+    elif selisih < 0:
+        st.success(f"✅ Durasi ini **{abs(selisih):.1f} hari lebih cepat** dari target perusahaan ({target_perusahaan} hari).")
+    else:
+        st.success(f"🎯 Durasi ini **tepat sesuai** target perusahaan ({target_perusahaan} hari).")
 
     with st.expander("📋 Detail input"):
         st.dataframe(df_input.T.rename(columns={0: "Nilai"}), use_container_width=True)
