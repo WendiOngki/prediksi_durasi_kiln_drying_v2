@@ -188,7 +188,7 @@ if submitted:
     with c4:
         st.metric("Musim", "🌧️ Hujan" if musim == 1 else "☀️ Kemarau")
 
-    mae_model = 0.8092
+    mae_model = 0.7458
     durasi_min = max(0, durasi - mae_model)
     durasi_max = durasi + mae_model
     st.caption(f"Rentang estimasi (± MAE model): **{durasi_min:.1f} – {durasi_max:.1f} hari**")
